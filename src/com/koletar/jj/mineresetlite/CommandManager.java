@@ -25,11 +25,11 @@ public class CommandManager {
     private Map<Method, Object> instances;
 
     public CommandManager() {
-        commands = new HashMap<String, Method>();
-        instances = new HashMap<Method, Object>();
+        commands = new HashMap<>();
+        instances = new HashMap<>();
     }
 
-    public void register(Class<?> cls, Object obj) {
+    void register(Class<?> cls, Object obj) {
         for (Method method : cls.getMethods()) {
             if (!method.isAnnotationPresent(Command.class)) {
                 continue;
@@ -59,7 +59,7 @@ public class CommandManager {
                 return;
             }
         }
-        List<Method> seenMethods = new LinkedList<Method>();
+        List<Method> seenMethods = new LinkedList<>();
         for (Map.Entry<String, Method> entry : commands.entrySet()) {
             if (!seenMethods.contains(entry.getValue())) {
                 seenMethods.add(entry.getValue());
@@ -84,7 +84,7 @@ public class CommandManager {
 
     }
 
-    public void callCommand(String cmdName, CommandSender sender, String[] args) {
+    void callCommand(String cmdName, CommandSender sender, String[] args) {
         //Do we have the command?
         Method method = commands.get(cmdName.toLowerCase());
         if (method == null) {
@@ -128,14 +128,14 @@ public class CommandManager {
             method.invoke(instances.get(method), methodArgs);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            throw new RuntimeException("Invalid methods on command!");
+            throw new RuntimeException("Invalid methods on command!" + e.getLocalizedMessage());
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof InvalidCommandArgumentsException) {
                 sender.sendMessage(phrase("invalidArguments"));
                 sender.sendMessage(phrase("invalidArgsUsage", command.aliases()[0], command.usage()));
             } else {
                 e.printStackTrace();
-                throw new RuntimeException("Invalid methods on command!");
+                throw new RuntimeException("Invalid methods on command!" + e.getLocalizedMessage());
             }
         }
     }

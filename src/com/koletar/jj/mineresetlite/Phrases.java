@@ -1,6 +1,6 @@
 package com.koletar.jj.mineresetlite;
 
-import org.bukkit.Material;
+import com.vk2gpz.mc.material.MaterialUtil;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -21,18 +21,18 @@ public class Phrases {
 
     private Phrases() {}
 
-    public static Phrases getInstance() {
+    static Phrases getInstance() {
         if (instance == null) {
             instance = new Phrases();
         }
         return instance;
     }
 
-    public void initialize(Locale l) {
+    void initialize(Locale l) {
         phrases = ResourceBundle.getBundle("phrases", l);
     }
 
-    public void overrides(Properties overrides) {
+    void overrides(Properties overrides) {
         this.overrides = overrides;
     }
 
@@ -60,7 +60,7 @@ public class Phrases {
         return format;
     }
 
-    public static String findName(Object o) {
+    static String findName(Object o) {
         if (o instanceof Mine) {
             return ((Mine) o).getName();
         } else if (o instanceof Player) {
@@ -68,7 +68,7 @@ public class Phrases {
         } else if (o instanceof World) {
             return ((World) o).getName();
         } else if (o instanceof SerializableBlock) {
-            return Material.getMaterial(((SerializableBlock) o).getBlockId()).toString() + (((SerializableBlock) o).getData() != 0 ? ":" + ((SerializableBlock) o).getData() : "");
+            return MaterialUtil.getMaterial("" + ((SerializableBlock) o).getBlockId()).toString() + (((SerializableBlock) o).getData() != 0 ? ":" + ((SerializableBlock) o).getData() : "");
         } else if (o instanceof ConsoleCommandSender) {
             return phrase("console");
         } else if (o instanceof BlockCommandSender) {

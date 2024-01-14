@@ -19,7 +19,7 @@ public @interface Command {
 
     /**
      * Usage string for arguments passed to the command.
-     * @return
+     * @return the usage
      */
     String usage() default "";
 
