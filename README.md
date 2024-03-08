@@ -1,4 +1,4 @@
-#[MineResetLite](https://polymart.org/resource/mineresetlite.137)
+[MineResetLite](https://polymart.org/resource/mineresetlite.137)
 =============
 
 Lightweight implementation for automatic mine resets.
