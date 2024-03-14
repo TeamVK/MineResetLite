@@ -5,14 +5,12 @@ import com.koletar.jj.mineresetlite.commands.PluginCommands;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.vk2gpz.mc.material.MaterialUtil;
 import com.vk2gpz.mc.plugin.Updater;
-import com.vk2gpz.mineresetlite.PAPIExpansion;
-import com.vk2gpz.mineresetlite.listeners.BlockEventListener;
-import com.vk2gpz.mineresetlite.listeners.ExplodeEventListener;
-import com.vk2gpz.mineresetlite.listeners.PlayerEventListener;
-import com.vk2gpz.mineresetlite.listeners.TokenEnchantEventListener;
+import com.vk2gpz.mineresetlite.listeners.*;
 import com.vk2gpz.mineresetlite.util.MRLUtil;
-import com.yevdo.jwildcard.JWildcard;
+import com.vk2gpz.vklib.logging.ColorConsoleLogger;
+import com.vk2gpz.vklib.text.WildcardUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -29,8 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -42,7 +38,7 @@ public class MineResetLite extends JavaPlugin {
 	@SuppressWarnings("unused")
 	public static final String POLYMART_DATA = "%%__DATA__%%";
 	
-	private List<Mine> mines;
+	public List<Mine> mines;
 	private CommandManager commandManager;
 	private WorldEditPlugin worldEdit = null;
 	private int saveTaskId = -1;
@@ -52,6 +48,19 @@ public class MineResetLite extends JavaPlugin {
 	static {
 		ConfigurationSerialization.registerClass(Mine.class);
 		MRLUtil.registerClasses();
+	}
+	
+	public static Mine findMine(@NotNull Location location) {
+		return getInstance()
+				.getMines()
+				.stream()
+				.filter(mi -> mi.isInside(location))
+				.findFirst()
+				.orElse(null);
+	}
+	
+	public static Mine[] findMines(String in) {
+		return getInstance().matchMines(in);
 	}
 	
 	private static class IsMineFile implements FilenameFilter {
@@ -68,6 +77,7 @@ public class MineResetLite extends JavaPlugin {
 	
 	public void onEnable() {
 		INSTANCE = this;
+		ColorConsoleLogger.initLogger(getLogger());
 		mines = new ArrayList<>();
 		if (!setupConfig()) {
 			getLogger().severe("Since I couldn't setup config files properly, I guess this is goodbye. ");
@@ -96,7 +106,7 @@ public class MineResetLite extends JavaPlugin {
 		}
 		
 		// All you have to do is adding this line in your onEnable method:
-		 //Metrics metrics = new Metrics(this);
+		// Metrics metrics = new Metrics(this);
 		
 		// Optional: Add custom charts
 		// metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
@@ -141,7 +151,7 @@ public class MineResetLite extends JavaPlugin {
 		registerListener();
 		
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new PAPIExpansion(this).register();
+			new com.vk2gpz.mineresetlite.PAPIExpansion(this).register();
 			getLogger().info("Registered PAPI expansion");
 		}
 		
@@ -166,11 +176,13 @@ public class MineResetLite extends JavaPlugin {
 		pm.registerEvents(new BlockEventListener(this), this);
 		
 		if (tePresent()) {
-			getLogger().info("Registering ExplodeEventListener");
-			pm.registerEvents(new ExplodeEventListener(this), this);
+			getLogger().info("Registering TEBlockExplodeEventListener");
+			pm.registerEvents(new TEBlockExplodeEventListener(this), this);
 			getLogger().info("Registering TokenEnchantEventListener");
 			pm.registerEvents(new TokenEnchantEventListener(this), this);
 		} else {
+			getLogger().info("Registering ExplodeEventListener");
+			pm.registerEvents(new ExplodeEventListener(this), this);
 			getLogger().info("Registering PlayerEventListener");
 			pm.registerEvents(new PlayerEventListener(this), this);
 		}
@@ -229,19 +241,21 @@ public class MineResetLite extends JavaPlugin {
 	}
 	
 	public Mine[] matchMines(String in) {
-		return mines.stream()
-				.filter(mine -> {
-					try {
-						//getLogger().info("checking name : " + in + " , against " + mine.getName());
-						return JWildcard.matches(in, mine.getName());
-					} catch (IllegalArgumentException e) {
-						getLogger().info("There was an issue the mine name : " + mine.getName());
-						getLogger().info("Skipping... you can safely ignore the following exception.");
-						e.printStackTrace();
-						return false;
-					}
-				})
-				.toArray(Mine[]::new);
+		List<Mine> matches = new LinkedList<>();
+		//getLogger().info("test : " + in);
+		for (Mine mine : mines) {
+			//getLogger().info("against : " + mine.getName());
+			try {
+				if (WildcardUtil.matches(in, mine.getName())) {
+					matches.add(mine);
+				}
+			} catch (IllegalArgumentException e) {
+				getLogger().info("mine name : " + mine.getName());
+				getLogger().info("skipping... you can safely ignore the following exception.");
+				e.printStackTrace();
+			}
+		}
+		return matches.toArray(new Mine[0]);
 	}
 	
 	public String toString(Mine @NotNull [] mines) {
@@ -365,11 +379,4 @@ public class MineResetLite extends JavaPlugin {
 		return Collections.unmodifiableList(this.mines);
 	}
 	
-	public static double round(double value, int places) {
-		if (places < 0) throw new IllegalArgumentException();
-		
-		BigDecimal bd = BigDecimal.valueOf(value);
-		bd = bd.setScale(places, RoundingMode.HALF_UP);
-		return bd.doubleValue();
-	}
 }

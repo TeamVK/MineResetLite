@@ -1,7 +1,7 @@
 package com.koletar.jj.mineresetlite;
 
+import com.vk2gpz.mc.block.BlockUtil;
 import com.vk2gpz.mc.material.MaterialUtil;
-import com.vk2gpz.mineresetlite.util.MRLUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -64,9 +64,9 @@ public class SerializableBlock {
 	}
 	
 	public void setBlockTypeFor(Block block) {
-		MRLUtil.setBlockTypeFor(block, this.blockId, this.type, this.data);
+		BlockUtil.setBlockTypeFor(block, this.blockId, this.type, this.data);
 	}
 	public static boolean isBlock(String namespeceID, Material type) {
-		return MRLUtil.isBlock(namespeceID, type);
+		return BlockUtil.isBlock(namespeceID, type);
 	}
 }

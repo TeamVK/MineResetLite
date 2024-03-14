@@ -4,6 +4,7 @@ import com.koletar.jj.mineresetlite.*;
 import com.vk2gpz.mc.material.MaterialUtil;
 import com.vk2gpz.mineresetlite.mine.MineType;
 import com.vk2gpz.mineresetlite.util.MRLUtil;
+import com.vk2gpz.vklib.math.MathUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -232,7 +233,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.composition"},
 			min = 3, max = -1, onlyPlayers = false)
 	public void setComposition(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 2));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 2));
 		if (invalidMines(sender, mines)) return;
 		//Match material
 		String[] bits = args[args.length - 2].split(":");
@@ -274,7 +275,7 @@ public class MineCommands {
 			return;
 		}
 		
-		percentage = MineResetLite.round(percentage / 100, 4); //Make it a programmatic percentage
+		percentage = MathUtil.round(percentage / 100, 4); //Make it a programmatic percentage
 		SerializableBlock block = new SerializableBlock(bits[0], data);
 		Double oldPercentage = mines[0].getComposition().get(block);
 		double total = 0;
@@ -309,7 +310,7 @@ public class MineCommands {
 				put(block, percentage);
 		sender.sendMessage(
 				
-				phrase("mineCompositionSet", mines[0], percentage * 100, block, MineResetLite.round((1 - mines[0].getCompositionTotal()) * 100, 4)));
+				phrase("mineCompositionSet", mines[0], percentage * 100, block, MathUtil.round((1 - mines[0].getCompositionTotal()) * 100, 4)));
 		plugin.buffSave();
 	}
 	
@@ -319,7 +320,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.composition"},
 			min = 2, max = -1, onlyPlayers = false)
 	public void unsetComposition(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		if (invalidMines(sender, mines)) return;
 		//Match material
 		String[] bits = args[args.length - 1].split(":");
@@ -342,7 +343,7 @@ public class MineCommands {
 		for (Map.Entry<SerializableBlock, Double> entry : mines[0].getComposition().entrySet()) {
 			if (entry.getKey().equals(block)) {
 				mines[0].getComposition().remove(entry.getKey());
-				sender.sendMessage(phrase("blockRemovedFromMine", mines[0], block, MineResetLite.round((1 - mines[0].getCompositionTotal()) * 100, 4)));
+				sender.sendMessage(phrase("blockRemovedFromMine", mines[0], block, MathUtil.round((1 - mines[0].getCompositionTotal()) * 100, 4)));
 				return;
 			}
 		}
@@ -360,7 +361,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.reset"},
 			min = 1, max = -1, onlyPlayers = false)
 	public void resetMine(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args).replace(" -s", ""));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //.replace(" -s", ""));
 		//if (invalidMines(sender, mines)) return;
 		for (Mine mine : mines) {
 			if (args[args.length - 1].equalsIgnoreCase("-s")) {
@@ -389,7 +390,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.flag"},
 			min = 3, max = -1, onlyPlayers = false)
 	public void flag(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 2));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 2));
 		//if (invalidMines(sender, mines)) return;
 		String setting = args[args.length - 2];
 		String value = args[args.length - 1];
@@ -637,7 +638,7 @@ public class MineCommands {
 	
 	@Command(aliases = {"addpotion", "addpot"}, description = "Adds the specified potion to the mine", help = {"This command will saddthe specified potion to the mine where you're standing.", "Use /mrl removepot <mine name> <potionname> to remove the specified potion effect from the mine."}, usage = "<mine name> <potionname:amplifier>", permissions = {"mineresetlite.mine.addpotion"}, min = 1, max = -1, onlyPlayers = true)
 	public void addPot(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		//if (invalidMines(sender, mines)) return;
 		for (Mine mine : mines) {
 			if (mine.addPotion(args[args.length - 1]) != null) {
@@ -649,7 +650,7 @@ public class MineCommands {
 	
 	@Command(aliases = {"removepotion", "removepot"}, description = "Removes the specified potion from the mine", help = {"This comamnd will remove the specified potion from the mine.", "Use /mrl removepot <potionname> to remove the potion.", "Use /mrl addpot <mine name> <potionname:amplifier> to add the specified potion effect to the mine."}, usage = "<mine name> <potionname>", permissions = {"mineresetlite.mine.removepotion"}, min = 1, max = -1, onlyPlayers = true)
 	public void removePot(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		//if (invalidMines(sender, mines)) return;
 		for (Mine mine : mines) {
 			mine.removePotion(args[args.length - 1]);
@@ -705,7 +706,7 @@ public class MineCommands {
 		//Sort coordinates
 		sortCoordinates(p1, p2);
 		MRLUtil.updateMine(mines[0], p1, p2, (MineType) selections[3], selections[4]);
-		player.sendMessage(phrase("mineRedefined"));
+		player.sendMessage(Phrases.phrase("mineRedefined"));
 		plugin.buffSave();
 	}
 	
@@ -717,7 +718,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.composition"},
 			min = 2, max = -1, onlyPlayers = false)
 	public void setStructure(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		if (invalidMines(sender, mines)) return;
 		//Match material
 		String[] bits = args[args.length - 1].split(":");
@@ -747,7 +748,7 @@ public class MineCommands {
 			permissions = {"mineresetlite.mine.composition"},
 			min = 2, max = -1, onlyPlayers = false)
 	public void unsetStructureComposition(CommandSender sender, String[] args) {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		if (invalidMines(sender, mines)) return;
 		//Match material
 		String[] bits = args[args.length - 1].split(":");
@@ -781,7 +782,7 @@ public class MineCommands {
 	
 	@Command(aliases = {"setlucky"}, description = "Sets the number of lucky blocks in the specified mine.", help = {"This command will set the number of lucky blocks in the specified mine."}, usage = "<mine name> <a_number_of_lucky_blocks>", permissions = {"mineresetlite.mine.setlucky"}, min = 1, max = -1, onlyPlayers = true)
 	public void setLucky(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		if (invalidMines(sender, mines)) return;
 		int num;
 		try {
@@ -799,7 +800,7 @@ public class MineCommands {
 	
 	@Command(aliases = {"makelucky"}, description = "Makes the n-th mined block as a lucky block in the specified mine.", help = {"This command will make the n-th mined block in the specified mine as a lucky block."}, usage = "<mine name> <a_number_of_lucky_block>", permissions = {"mineresetlite.mine.makelucky"}, min = 1, max = -1, onlyPlayers = true)
 	public void makeLucky(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
-		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args, 1));
+		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		if (invalidMines(sender, mines)) return;
 		int num;
 		try {

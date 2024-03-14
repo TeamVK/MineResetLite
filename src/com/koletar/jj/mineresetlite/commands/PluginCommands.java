@@ -2,7 +2,7 @@ package com.koletar.jj.mineresetlite.commands;
 
 import com.koletar.jj.mineresetlite.Command;
 import com.koletar.jj.mineresetlite.MineResetLite;
-import com.vk2gpz.mc.debug.DebugHandler;
+import com.vk2gpz.vklib.debug.DebugHandler;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
