@@ -8,7 +8,7 @@ You can get the latest build from [here](https://polymart.org/resource/minereset
 ## Features:
 
 - It supports non-cuboid shape mines such as Polygon2D, Cylinder, Ellipsoid in addition to a traditional cuboid.  You can use WorldEdit to specify such complex shape mines.
-[Polygon shape Mine](https://youtu.be/71dxuIUpRb4?si=g2oJilb-ZwlAAxyL)
+[![Video: Polygon shape Mine]](https://youtu.be/71dxuIUpRb4?si=g2oJilb-ZwlAAxyL)
 
 - It works with v6, v7 and new-v7 WorldEdit (including FastAsyncWorldEdit).
 - This version also supports 1.13 style block specification, it supports all the following formats:
