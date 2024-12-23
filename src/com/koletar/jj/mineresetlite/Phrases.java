@@ -7,6 +7,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ public class Phrases {
             return "";
         }
         if (getInstance().phrases == null) {
-            return "\u00A74Phrase Error! Did you /reload? Don't!";
+            return "§4Phrase Error! Did you /reload? Don't!";
         }
         if (!getInstance().phrases.containsKey(key)) {
             Logger.getLogger("Minecraft").warning("[MineResetLite] Unknown phrase key! '" + key + "'");
@@ -56,7 +57,7 @@ public class Phrases {
         for (int i = 0; i < replacements.length; i++) {
             format = format.replace("%" + i + "%", findName(replacements[i]));
         }
-        format = format.replace("&", "\u00A7").replace("\u00A7\u00A7", "&");
+        format = format.replace("&", "§").replace("§§", "&");
         return format;
     }
 
@@ -68,7 +69,7 @@ public class Phrases {
         } else if (o instanceof World) {
             return ((World) o).getName();
         } else if (o instanceof SerializableBlock) {
-            return MaterialUtil.getMaterial("" + ((SerializableBlock) o).getBlockId()).toString() + (((SerializableBlock) o).getData() != 0 ? ":" + ((SerializableBlock) o).getData() : "");
+            return Objects.requireNonNull(MaterialUtil.getMaterial(((SerializableBlock) o).getBlockId())) + (((SerializableBlock) o).getData() != 0 ? ":" + ((SerializableBlock) o).getData() : "");
         } else if (o instanceof ConsoleCommandSender) {
             return phrase("console");
         } else if (o instanceof BlockCommandSender) {

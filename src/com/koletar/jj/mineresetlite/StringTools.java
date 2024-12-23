@@ -6,44 +6,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-
 /**
  * @author jjkoletar
  * @author vk2gpz
  */
 public class StringTools {
-    /**
-     * Build a spaced argument out of an array of args that don't contain spaces, due to the command delimiter.
-     * @param args String array of args
-     * @param start Number of elements to skip over/index to begin at
-     * @param stop Number of elements at the <b>end of the array</b> to ignore, <u>not</u> a stopping index.
-     * @return Reconstructed spaced argument
-     */
-    public static String buildSpacedArgument(String[] args, int start, int stop) {
-        return start >= 0 && start <= stop && start < args.length
-                ? String.join(" ", Arrays.copyOfRange(args, start, Math.min(stop + 1, args.length)))
-                : "";
-    }
-    
-    public static @NotNull String buildSpacedArgument(String[] args, int stop) {
-        return buildSpacedArgument(args, 0, stop);
-    }
+	/**
+	 * Build a spaced argument out of an array of args that don't contain spaces, due to the command delimiter.
+	 *
+	 * @param args  String array of args
+	 * @param start Number of elements to skip over/index to begin at
+	 * @param stop  Number of elements at the <b>end of the array</b> to ignore, <u>not</u> a stopping index.
+	 * @return Reconstructed spaced argument
+	 */
+	public static String buildSpacedArgument(String[] args, int start, int stop) {
+		return start >= 0 && start <= stop && start < args.length
+				? String.join(" ", Arrays.copyOfRange(args, start, Math.min(stop + 1, args.length)))
+				: "";
+	}
 
-    public static @NotNull String buildSpacedArgument(String[] args) {
-        return buildSpacedArgument(args, 0);
-    }
+	public static @NotNull String buildSpacedArgument(String[] args, int stop) {
+		return buildSpacedArgument(args, 0, stop);
+	}
 
-    private static String buildList(Object[] items, String prefix, String suffix) {
-        StringJoiner sj = new StringJoiner(suffix);
-        
-        Arrays.stream(items)
-                .map(item -> prefix + Phrases.findName(item))
-                .forEach(sj::add);
-        
-        return sj.toString();
-    }
-    
-    public static String buildList(List<?> items, String prefix, String suffix) {
-        return buildList(items.toArray(), prefix, suffix);
-    }
+	public static @NotNull String buildSpacedArgument(String[] args) {
+		return buildSpacedArgument(args, 0);
+	}
+
+	private static String buildList(Object[] items, String prefix, String suffix) {
+		StringJoiner sj = new StringJoiner(suffix);
+
+		Arrays.stream(items)
+				.map(item -> prefix + Phrases.findName(item))
+				.forEach(sj::add);
+
+		return sj.toString();
+	}
+
+	public static String buildList(List<?> items, String prefix, String suffix) {
+		return buildList(items.toArray(), prefix, suffix);
+	}
 }

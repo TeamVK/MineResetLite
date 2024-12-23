@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
  */
 public class Mine implements ConfigurationSerializable {
 	protected static final Random RAND = new Random();
-	
+
 	protected int minX;
 	protected int minY;
 	protected int minZ;
@@ -52,20 +52,20 @@ public class Mine implements ConfigurationSerializable {
 	protected int tpZ = 0;
 	protected int tpYaw = 0;
 	protected int tpPitch = 0;
-	
+
 	// from MineResetLitePlus
 	protected double resetPercent = -1.0;
 	protected transient int maxCount = 0;
 	private transient int currentBroken = 0;
-	
+
 	protected List<PotionEffect> potions = new ArrayList<>();
-	
+
 	protected int luckyBlocks = 0;
 	List<Integer> luckyNum;
 	protected List<String> luckyCommands;
-	
+
 	protected boolean tpAtReset;
-	
+
 	protected Mine(String name) {
 		this.name = name;
 		composition = new HashMap<>();
@@ -75,25 +75,25 @@ public class Mine implements ConfigurationSerializable {
 		luckyNum = new ArrayList<>();
 		luckyCommands = new ArrayList<>();
 	}
-	
+
 	public Mine(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, String name, World world) {
 		this(name);
 		redefine(minX, minY, minZ, maxX, maxY, maxZ, world);
 		setMaxCount();
 	}
-	
+
 	public Mine(Map<String, Object> me) {
 		this((String) me.get("name"));
 		try {
 			redefine((Integer) me.get("minX"), (Integer) me.get("minY"), (Integer) me.get("minZ"),
 					(Integer) me.get("maxX"), (Integer) me.get("maxY"), (Integer) me.get("maxZ"),
 					Bukkit.getServer().getWorld((String) me.get("world")));
-			
+
 			setMaxCount();
 		} catch (Throwable t) {
 			throw new IllegalArgumentException("Error deserializing coordinate pairs");
 		}
-		
+
 		if (world == null) {
 			Logger l = MineResetLite.getInstance().getLogger();
 			l.severe("[MineResetLite] Unable to find a world! Please include these logger lines along with the stack trace when reporting this bug!");
@@ -110,7 +110,7 @@ public class Mine implements ConfigurationSerializable {
 		} catch (Throwable t) {
 			throw new IllegalArgumentException("Error deserializing composition");
 		}
-		
+
 		try {
 			List<String> sStructure = (List<String>) me.get("structure");
 			structure = new HashSet<>();
@@ -120,7 +120,7 @@ public class Mine implements ConfigurationSerializable {
 		} catch (Throwable t) {
 			//throw new IllegalArgumentException("Error deserializing structure");
 		}
-		
+
 		resetDelay = (Integer) me.get("resetDelay");
 		List<String> warnings = (List<String>) me.get("resetWarnings");
 		resetWarnings = new LinkedList<>();
@@ -160,16 +160,16 @@ public class Mine implements ConfigurationSerializable {
 			tpY = (int) me.get("tpY");
 			tpZ = (int) me.get("tpZ");
 		}
-		
+
 		if (me.containsKey("tpYaw")) {
 			tpYaw = (int) me.get("tpYaw");
 			tpPitch = (int) me.get("tpPitch");
 		}
-		
+
 		if (me.containsKey("resetPercent")) {
 			resetPercent = (double) me.get("resetPercent");
 		}
-		
+
 		if (me.containsKey("potions")) {
 			potions = new ArrayList<>();
 			Map<String, Integer> potionpairs = (Map<String, Integer>) me.get("potions");
@@ -183,17 +183,17 @@ public class Mine implements ConfigurationSerializable {
 				potions.add(pot);
 			}
 		}
-		
+
 		if (me.containsKey("lucky_blocks")) {
 			setLuckyBlockNum((int) me.get("lucky_blocks"));
 		}
 		if (me.containsKey("lucky_commands")) {
 			setLuckyCommands((List<String>) me.get("lucky_commands"));
 		}
-		
+
 		tpAtReset = !me.containsKey("tpAtReset") || (boolean) me.get("tpAtReset");
 	}
-	
+
 	@NotNull
 	public Map<String, Object> serialize() {
 		Map<String, Object> me = new HashMap<>();
@@ -224,7 +224,7 @@ public class Mine implements ConfigurationSerializable {
 		for (Integer warning : resetWarningsLastMinute) {
 			warnings.add(warning.toString() + 's');
 		}
-		
+
 		me.put("resetWarnings", warnings);
 		if (surface != null) {
 			me.put("surface", surface.toString());
@@ -239,56 +239,56 @@ public class Mine implements ConfigurationSerializable {
 		me.put("tpZ", tpZ);
 		me.put("tpYaw", tpYaw);
 		me.put("tpPitch", tpPitch);
-		
+
 		me.put("resetPercent", resetPercent);
-		
+
 		Map<String, Integer> potionpairs = new HashMap<>();
 		for (PotionEffect pe : this.potions) {
 			potionpairs.put(pe.getType().getName(), pe.getAmplifier());
 		}
 		me.put("potions", potionpairs);
-		
+
 		me.put("lucky_blocks", luckyBlocks);
 		me.put("lucky_commands", luckyCommands);
-		
+
 		me.put("tpAtReset", tpAtReset);
-		
+
 		return me;
 	}
-	
+
 	public boolean getFillMode() {
 		return fillMode;
 	}
-	
+
 	public void setFillMode(boolean fillMode) {
 		this.fillMode = fillMode;
 	}
-	
+
 	public void setResetDelay(int minutes) {
 		resetDelay = minutes;
 		resetClock = minutes;
 	}
-	
+
 	public void setResetWarnings(List<Integer> warnings) {
 		resetWarnings = warnings;
 	}
-	
+
 	public List<Integer> getResetWarnings() {
 		return resetWarnings;
 	}
-	
+
 	public void setResetWarningsLastMinute(List<Integer> warnings) {
 		resetWarningsLastMinute = warnings;
 	}
-	
+
 	public List<Integer> getResetWarningsLastMinute() {
 		return resetWarningsLastMinute;
 	}
-	
+
 	public int getResetDelay() {
 		return resetDelay;
 	}
-	
+
 	/**
 	 * Return the length of time until the next automatic reset.
 	 * The actual length of time is anywhere between n and n-1 minutes.
@@ -298,74 +298,74 @@ public class Mine implements ConfigurationSerializable {
 	public int getTimeUntilReset() {
 		return resetClock;
 	}
-	
+
 	public int getSecondsUntilReset() {
 		int ret = resetClock * 60;
-		
+
 		if (resetClock == 1 && lastMinueCounter != null && !lastMinueCounter.isCancelled() && secondsCounter != null) {
 			ret = secondsCounter.getCount();
 		}
-		
+
 		return ret;
 	}
-	
+
 	public SerializableBlock getSurface() {
 		return surface;
 	}
-	
+
 	public void setSurface(SerializableBlock surface) {
 		this.surface = surface;
 	}
-	
+
 	public World getWorld() {
 		return world;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public Map<SerializableBlock, Double> getComposition() {
 		return composition;
 	}
-	
+
 	public Set<SerializableBlock> getStructure() {
 		return structure;
 	}
-	
+
 	public boolean isSilent() {
 		return isSilent;
 	}
-	
+
 	public void setSilence(boolean isSilent) {
 		this.isSilent = isSilent;
 	}
-	
+
 	public double getCompositionTotal() {
 		return MathUtil.round(composition.values().stream()
 				.mapToDouble(Double::doubleValue)
 				.sum(), 4);
 	}
-	
+
 	public boolean isInside(Player p) {
 		return isInside(p.getLocation());
 	}
-	
+
 	public boolean isInside(Location l) {
 		return Objects.equals(l.getWorld(), world)
 				&& (l.getBlockX() >= minX && l.getBlockX() <= maxX)
 				&& (l.getBlockY() >= minY && l.getBlockY() <= maxY)
 				&& (l.getBlockZ() >= minZ && l.getBlockZ() <= maxZ);
 	}
-	
+
 	public boolean tpAtReset() {
 		return tpAtReset;
 	}
-	
+
 	public void setTpAtReset(boolean tpatreset) {
 		this.tpAtReset = tpatreset;
 	}
-	
+
 	public void setTp(Location l) {
 		tpX = l.getBlockX();
 		tpY = l.getBlockY();
@@ -373,35 +373,35 @@ public class Mine implements ConfigurationSerializable {
 		tpYaw = (int) l.getYaw();
 		tpPitch = (int) l.getPitch();
 	}
-	
+
 	private Location getTp() {
 		return new Location(getWorld(), tpX, tpY, tpZ, tpYaw, tpPitch);
 	}
-	
+
 	protected transient boolean resetting = false;
-	
+
 	protected transient List<CompositionEntry> probabilityMap;
-	
+
 	public boolean reset() {
 		if (resetting)
 			return false;
-		
+
 		resetting = true;
 		final Mine mine = this;
-		
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
 				if (probabilityMap == null || probabilityMap.isEmpty()) {
 					probabilityMap = mapComposition(composition);
 				}
-				
+
 				if (tpAtReset) {
 					Bukkit.getServer().getOnlinePlayers().stream()
 							.filter(p -> isInside(p))
 							.forEach(p -> teleport(p, true));
 				}
-				
+
 				for (int x = minX; x <= maxX; ++x) {
 					for (int y = minY; y <= maxY; ++y) {
 						for (int z = minZ; z <= maxZ; ++z) {
@@ -415,7 +415,7 @@ public class Mine implements ConfigurationSerializable {
 								int finalX = x;
 								int finalY = y;
 								int finalZ = z;
-								
+
 								probabilityMap.stream()
 										.filter(ce -> r <= ce.getChance())
 										.findFirst()
@@ -430,44 +430,44 @@ public class Mine implements ConfigurationSerializable {
 				Bukkit.getServer().getPluginManager().callEvent(mre);
 			}
 		}.runTaskLater(MineResetLite.getInstance(), Config.getResetDelay());
-		
+
 		return true;
 	}
-	
+
 	private transient Set<Material> mineMaterials;
 	private transient Set<Material> exceptions;  // these material won't be replaced.
-	
+
 	private void setMineMaterials() {
 		if (mineMaterials == null) {
 			mineMaterials = new HashSet<>();
 		}
-		
+
 		for (SerializableBlock sb : this.composition.keySet())
 			mineMaterials.add(sb.getBlockType());
 	}
-	
+
 	private void setStructureMaterials() {
 		if (exceptions == null) {
 			exceptions = new HashSet<>();
 		}
-		
+
 		for (SerializableBlock sb : this.structure)
 			exceptions.add(sb.getBlockType());
 	}
-	
+
 	protected boolean shoulBeFilled(Material mat) {
 		if (mineMaterials == null || mineMaterials.size() == 0)
 			setMineMaterials();
 		if (exceptions == null)
 			setStructureMaterials();
-		
+
 		return (mat == Material.AIR || (!mineMaterials.contains(mat) && !exceptions.contains(mat)));
 	}
-	
+
 	transient SecondsCounter secondsCounter;
 	transient BukkitTask lastMinueCounter;
-	
-	void cron() {
+
+	public void cron() {
 		if (resetDelay == 0) {
 			return;
 		}
@@ -482,13 +482,13 @@ public class Mine implements ConfigurationSerializable {
 			resetClock = resetDelay;
 			return;
 		}
-		
+
 		//if (!isSilent) {
 		for (Integer warning : resetWarnings) {
 			if (warning == resetClock) {
 				MineResetLite.broadcast(Phrases.phrase("mineWarningBroadcast", this, warning), this);
 			}
-			
+
 			if (resetClock == 1 && resetWarningsLastMinute.size() > 0 && isCancelled(lastMinueCounter)) {
 				secondsCounter = new SecondsCounter();
 				lastMinueCounter = secondsCounter.runTaskTimerAsynchronously(MineResetLite.getInstance(), 0L, 20L);
@@ -496,10 +496,10 @@ public class Mine implements ConfigurationSerializable {
 		}
 		//}
 	}
-	
+
 	class SecondsCounter extends BukkitRunnable {
 		int count = 60;
-		
+
 		@Override
 		public void run() {
 			if (resetWarningsLastMinute.contains(count)) {
@@ -511,17 +511,17 @@ public class Mine implements ConfigurationSerializable {
 				cancel();
 			}
 		}
-		
+
 		public int getCount() {
 			return count;
 		}
 	}
-	
+
 	private boolean isCancelled(BukkitTask task) {
 		if (task == null) {
 			return true;
 		}
-		
+
 		try {
 			return task.isCancelled();
 		} catch (IllegalStateException e) {
@@ -534,25 +534,25 @@ public class Mine implements ConfigurationSerializable {
 			}
 		}
 	}
-	
+
 	public static class CompositionEntry {
 		private SerializableBlock block;
 		private double chance;
-		
+
 		public CompositionEntry(SerializableBlock block, double chance) {
 			this.block = block;
 			this.chance = chance;
 		}
-		
+
 		public SerializableBlock getBlock() {
 			return block;
 		}
-		
+
 		public double getChance() {
 			return chance;
 		}
 	}
-	
+
 	protected static ArrayList<CompositionEntry> mapComposition(Map<SerializableBlock, Double> compositionIn) {
 		ArrayList<CompositionEntry> probabilityMap = new ArrayList<>();
 		Map<SerializableBlock, Double> composition = new HashMap<>(compositionIn);
@@ -574,14 +574,14 @@ public class Mine implements ConfigurationSerializable {
 		}
 		return probabilityMap;
 	}
-	
+
 	public void teleport(Player player) {
 		teleport(player, false);
 	}
-	
+
 	protected void teleport(Player player, boolean straight_up) {
 		Location destination;
-		
+
 		if (tpY != -Integer.MAX_VALUE) {
 			destination = getTp();
 		} else {
@@ -592,48 +592,48 @@ public class Mine implements ConfigurationSerializable {
 				destination = this.centerOfGravity;
 			}
 			Block block = destination.getBlock();
-			
+
 			if (block.getType() != Material.AIR || block.getRelative(BlockFace.UP).getType() != Material.AIR) {
 				destination = new Location(world, destination.getX(), destination.getWorld().getHighestBlockYAt(destination.getBlockX(), destination.getBlockZ()), destination.getZ());
 			}
 		}
-		
+
 		player.teleport(destination);
 	}
-	
+
 	private void setMaxCount() {
 		int dx = maxX - minX + 1;
 		int dy = maxY - minY + 1;
 		int dz = maxZ - minZ + 1;
-		
+
 		this.maxCount = dx * dy * dz;
 	}
-	
+
 	public int getMaxCount() {
 		return this.maxCount;
 	}
-	
+
 	public void setResetPercent(double per) {
 		this.resetPercent = per;
 	}
-	
+
 	public double getResetPercent() {
 		return this.resetPercent;
 	}
-	
+
 	public void setBrokenBlocks(int broken) {
 		int previous = this.currentBroken;
 		this.currentBroken = broken;
-		
+
 		MineUpdatedEvent mue = new MineUpdatedEvent(this);
 		Bukkit.getServer().getPluginManager().callEvent(mue);
-		
+
 		if (this.resetPercent > 0) {
 			resetWarnings.stream()
 					.map(warning -> (int) (this.maxCount * (1.0 - (warning * 0.01))))
 					.filter(threshold -> previous < threshold && this.currentBroken >= threshold)
 					.forEach(threshold -> MineResetLite.broadcast(Phrases.phrase("mineWarningPercentageBroadcast", this, threshold), this));
-			
+
 			if (this.currentBroken >= (this.maxCount * (1.0 - this.resetPercent))) {
 				new BukkitRunnable() {
 					@Override
@@ -647,34 +647,34 @@ public class Mine implements ConfigurationSerializable {
 			}
 		}
 	}
-	
+
 	public int getBrokenBlocks() {
 		return this.currentBroken;
 	}
-	
+
 	protected void resetMRLP() {
 		this.currentBroken = 0;
 		resetLuckyNumbers();
 	}
-	
+
 	public List<PotionEffect> getPotions() {
 		return this.potions;
 	}
-	
+
 	public PotionEffect addPotion(@NotNull String potstr) {
 		String[] tokens = potstr.split(":");
 		int amp = tokens.length > 1 ? Integer.parseInt(tokens[1]) : 1;
-		
+
 		removePotion(tokens[0]);
-		
+
 		PotionEffect pot = createPotionEffect(tokens[0], amp);
 		if (pot != null) {
 			potions.add(pot);
 		}
-		
+
 		return pot;
 	}
-	
+
 	private @Nullable PotionEffect createPotionEffect(String potionName, int amplifier) {
 		try {
 			return new PotionEffect(
@@ -685,12 +685,12 @@ public class Mine implements ConfigurationSerializable {
 			return null;
 		}
 	}
-	
-	
+
+
 	public void removePotion(final String pot) {
 		potions.removeIf(pe -> pe.getType().getName().equalsIgnoreCase(pot));
 	}
-	
+
 	public void redefine(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, World world) {
 		this.minX = minX;
 		this.minY = minY;
@@ -699,52 +699,52 @@ public class Mine implements ConfigurationSerializable {
 		this.maxY = maxY;
 		this.maxZ = maxZ;
 		this.world = world;
-		
+
 		computeCenterOfGravity(this.world, this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ);
 	}
-	
+
 	protected Location centerOfGravity;
-	
+
 	protected Location computeCenterOfGravity(World w, int min_x, int max_x, int min_y, int max_y, int min_z, int max_z) {
 		Location max = new Location(w, Math.max(max_x, min_x), max_y, Math.max(max_z, min_z));
 		Location min = new Location(w, Math.min(max_x, min_x), min_y, Math.min(max_z, min_z));
-		
+
 		centerOfGravity = max.add(min).multiply(0.5);
 		return centerOfGravity;
 	}
-	
+
 	public void setLuckyBlockNum(int num) {
 		this.luckyBlocks = num;
 		resetLuckyNumbers();
 	}
-	
+
 	private void resetLuckyNumbers() {
 		this.luckyNum = new ArrayList<>();
-		
+
 		IntStream.range(0, this.luckyBlocks)
 				.map(i -> RAND.nextInt(this.maxCount) + 1)
 				.forEach(this.luckyNum::add);
 	}
-	
+
 	private boolean isLuckyNumber(int num) {
 		return this.luckyNum != null && this.luckyNum.contains(num);
 	}
-	
+
 	public boolean executeLuckyCommand(Player p) {
 		if (isLuckyNumber(this.currentBroken) && !this.luckyCommands.isEmpty()) {
 			int id = RAND.nextInt(this.luckyCommands.size());
 			String cmd = this.luckyCommands.get(id).replace("%player%", p.getName());
 			String[] cmds = cmd.split(";");
-			
+
 			try {
 				Arrays.stream(cmds)
 						.map(String::trim)
 						.forEach(c -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), c));
-				
+
 				// play effect
 				Optional.ofNullable(Config.getLuckyEffect()).ifPresent(effect -> p.getWorld().playEffect(p.getLocation(), effect, 0, 20));
 				Optional.ofNullable(Config.getLuckySound()).ifPresent(sound -> p.getWorld().playSound(p.getLocation(), sound, 1F, 1F));
-				
+
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -752,11 +752,11 @@ public class Mine implements ConfigurationSerializable {
 		}
 		return false;
 	}
-	
+
 	protected void setLuckyCommands(List<String> list) {
 		this.luckyCommands = list;
 	}
-	
+
 	public void makeLucky(int num) {
 		this.luckyNum.set(0, num);
 	}
