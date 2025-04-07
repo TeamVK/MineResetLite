@@ -7,7 +7,7 @@ You can get the latest build from [here](https://polymart.org/resource/minereset
 
 ## Features:
 
-- It supports the latest Minecraft version (1.21.4) and all previous versions.
+- It supports the latest Minecraft version (1.21.5) and all previous versions.
 - It supports non-cuboid shape mines such as Polygon2D, Cylinder, Ellipsoid in addition to a traditional cuboid.  You can use WorldEdit to specify such complex shape mines.
 [Polygon shape Mine](https://youtu.be/71dxuIUpRb4?si=g2oJilb-ZwlAAxyL)
 
