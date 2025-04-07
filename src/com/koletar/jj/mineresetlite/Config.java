@@ -1,5 +1,6 @@
 package com.koletar.jj.mineresetlite;
 
+import com.vk2gpz.mc.sound.SoundUtil;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -377,7 +378,7 @@ public class Config {
 			Config.writeLuckySound(out);
 		}
 		try {
-			Config.setLuckySound(Sound.valueOf(config.getString("lucky_block_sound", "AMBIENCE_THUNDER")));
+			Config.setLuckySound(SoundUtil.getSound(config.getString("lucky_block_sound", "AMBIENCE_THUNDER")));
 		} catch (
 				Throwable ignore) {
 			Config.setLuckySound(null);

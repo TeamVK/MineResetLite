@@ -111,8 +111,6 @@ public class MineCommands {
 			}
 			p1 = point1.get(player).toVector();
 			p2 = point2.get(player).toVector();
-			//System.out.println("point1 : " + p1);
-			//System.out.println("point2 : " + p2);
 		}
 		Object[] selections = MRLUtil.getSelection(player);
 		if (selections != null) {
@@ -120,8 +118,6 @@ public class MineCommands {
 				world = (World) selections[0];
 				p1 = (Vector) selections[1];
 				p2 = (Vector) selections[2];
-				//System.out.println("WE point1 : " + p1);
-				//System.out.println("WE point2 : " + p2);
 			}
 		}
 		//Construct mine name
@@ -199,7 +195,7 @@ public class MineCommands {
 			sender.sendMessage(phrase("mineInfoTimeUntilReset", mines[0].getTimeUntilReset()));
 		}
 		sender.sendMessage(phrase("mineInfoSilence", mines[0].isSilent()));
-		if (mines[0].getResetWarnings().size() > 0) {
+		if (!mines[0].getResetWarnings().isEmpty()) {
 			sender.sendMessage(phrase("mineInfoWarningTimes", StringTools.buildList(mines[0].getResetWarnings(), "", ", ")));
 		}
 		if (mines[0].getSurface() != null) {
@@ -624,7 +620,7 @@ public class MineCommands {
 	}
 
 	@Command(aliases = {"settp", "stp"}, description = "Sets the specified mine's spawn point", help = {"This command will set the specified mine's reset spawn point to where you're standing.", "Use /mrl removetp <mine name> to remove the mine's spawn point."}, usage = "<mine name>", permissions = {"mineresetlite.mine.settp"}, min = 1, max = -1, onlyPlayers = true)
-	public void setTP(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
+	public void setTP(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args));
 		if (invalidMines(sender, mines)) return;
@@ -634,7 +630,7 @@ public class MineCommands {
 	}
 
 	@Command(aliases = {"removetp", "rtp"}, description = "Removes the specified mine's spawn point", help = {"This comamnd will remove the specified mine's reset spawn point.", "Use /mrl removetp to remove the spawn point.", "use /mrl settp to set it to where you're standing."}, usage = "<mine name>", permissions = {"mineresetlite.mine.removetp"}, min = 1, max = -1, onlyPlayers = true)
-	public void removeTP(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
+	public void removeTP(CommandSender sender, String[] args) {
 		Player player = (Player) sender;
 		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args));
 		if (invalidMines(sender, mines)) return;
@@ -644,7 +640,7 @@ public class MineCommands {
 	}
 
 	@Command(aliases = {"addpotion", "addpot"}, description = "Adds the specified potion to the mine", help = {"This command will saddthe specified potion to the mine where you're standing.", "Use /mrl removepot <mine name> <potionname> to remove the specified potion effect from the mine."}, usage = "<mine name> <potionname:amplifier>", permissions = {"mineresetlite.mine.addpotion"}, min = 1, max = -1, onlyPlayers = true)
-	public void addPot(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
+	public void addPot(CommandSender sender, String[] args) {
 		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		//if (invalidMines(sender, mines)) return;
 		for (Mine mine : mines) {
@@ -656,7 +652,7 @@ public class MineCommands {
 	}
 
 	@Command(aliases = {"removepotion", "removepot"}, description = "Removes the specified potion from the mine", help = {"This comamnd will remove the specified potion from the mine.", "Use /mrl removepot <potionname> to remove the potion.", "Use /mrl addpot <mine name> <potionname:amplifier> to add the specified potion effect to the mine."}, usage = "<mine name> <potionname>", permissions = {"mineresetlite.mine.removepotion"}, min = 1, max = -1, onlyPlayers = true)
-	public void removePot(CommandSender sender, String[] args) throws InvalidCommandArgumentsException {
+	public void removePot(CommandSender sender, String[] args) {
 		Mine[] mines = plugin.matchMines(StringTools.buildSpacedArgument(args)); //, 1));
 		//if (invalidMines(sender, mines)) return;
 		for (Mine mine : mines) {

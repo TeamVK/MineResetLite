@@ -65,6 +65,7 @@ public class Mine implements ConfigurationSerializable {
 	protected List<String> luckyCommands;
 
 	protected boolean tpAtReset;
+	private transient long lastResetTime;
 
 	protected Mine(String name) {
 		this.name = name;
@@ -267,6 +268,7 @@ public class Mine implements ConfigurationSerializable {
 	public void setResetDelay(int minutes) {
 		resetDelay = minutes;
 		resetClock = minutes;
+		lastResetTime = System.currentTimeMillis();
 	}
 
 	public void setResetWarnings(List<Integer> warnings) {
@@ -300,6 +302,8 @@ public class Mine implements ConfigurationSerializable {
 	}
 
 	public int getSecondsUntilReset() {
+		return (int) (this.lastResetTime + resetDelay * 60000 - System.currentTimeMillis()) / 1000;
+		/*
 		int ret = resetClock * 60;
 
 		if (resetClock == 1 && lastMinueCounter != null && !lastMinueCounter.isCancelled() && secondsCounter != null) {
@@ -307,6 +311,7 @@ public class Mine implements ConfigurationSerializable {
 		}
 
 		return ret;
+		*/
 	}
 
 	public SerializableBlock getSurface() {
@@ -426,6 +431,7 @@ public class Mine implements ConfigurationSerializable {
 				}
 				resetMRLP();
 				resetting = false;
+				lastResetTime = System.currentTimeMillis();
 				MineResetEvent mre = new MineResetEvent(mine);
 				Bukkit.getServer().getPluginManager().callEvent(mre);
 			}
@@ -456,7 +462,7 @@ public class Mine implements ConfigurationSerializable {
 	}
 
 	protected boolean shoulBeFilled(Material mat) {
-		if (mineMaterials == null || mineMaterials.size() == 0)
+		if (mineMaterials == null || mineMaterials.isEmpty())
 			setMineMaterials();
 		if (exceptions == null)
 			setStructureMaterials();
@@ -489,7 +495,7 @@ public class Mine implements ConfigurationSerializable {
 				MineResetLite.broadcast(Phrases.phrase("mineWarningBroadcast", this, warning), this);
 			}
 
-			if (resetClock == 1 && resetWarningsLastMinute.size() > 0 && isCancelled(lastMinueCounter)) {
+			if (resetClock == 1 && !resetWarningsLastMinute.isEmpty() && isCancelled(lastMinueCounter)) {
 				secondsCounter = new SecondsCounter();
 				lastMinueCounter = secondsCounter.runTaskTimerAsynchronously(MineResetLite.getInstance(), 0L, 20L);
 			}

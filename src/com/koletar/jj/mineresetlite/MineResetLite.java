@@ -262,10 +262,6 @@ public class MineResetLite extends JavaPlugin {
 
 	private static boolean checkMatch(String @NotNull [] tokens, String key) {
 		for (String token : tokens) {
-			boolean ismatch = isMatch(token, key);
-			//getInstance().getLogger().info("ismatch:" + ismatch);
-			//getInstance().getLogger().info("token:" + token);
-			//getInstance().getLogger().info("key:" + key);
 			if (isMatch(token, key)) {
 				return true;
 			}

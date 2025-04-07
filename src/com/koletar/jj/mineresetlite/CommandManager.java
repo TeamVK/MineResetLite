@@ -108,10 +108,7 @@ public class CommandManager {
 		}
 
 		//Permission checks
-		boolean may = false;
-		if (command.permissions().length == 0) {
-			may = true;
-		}
+		boolean may = command.permissions().length == 0;
 		for (String perm : command.permissions()) {
 			if (sender.hasPermission(perm)) {
 				may = true;
@@ -135,7 +132,7 @@ public class CommandManager {
 				sender.sendMessage(phrase("invalidArgsUsage", command.aliases()[0], command.usage()));
 			} else {
 				e.printStackTrace();
-				throw new RuntimeException("Invalid methods on command!" + e.getLocalizedMessage());
+				throw new RuntimeException("Invalid methods on command! " + e.getLocalizedMessage());
 			}
 		}
 	}
