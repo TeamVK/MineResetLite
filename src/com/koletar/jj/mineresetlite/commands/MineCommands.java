@@ -330,6 +330,7 @@ public class MineCommands {
 		for (Map.Entry<SerializableBlock, Double> entry : mines[0].getComposition().entrySet()) {
 			if (entry.getKey().equals(block)) {
 				mines[0].getComposition().remove(entry.getKey());
+				plugin.buffSave();
 				sender.sendMessage(phrase("blockRemovedFromMine", mines[0], block, MathUtil.round((1 - mines[0].getCompositionTotal()) * 100, 4)));
 				return;
 			}
