@@ -397,9 +397,7 @@ public class Mine implements ConfigurationSerializable {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (probabilityMap == null || probabilityMap.isEmpty()) {
-					probabilityMap = mapComposition(composition);
-				}
+				probabilityMap = mapComposition(composition);
 
 				if (tpAtReset) {
 					Bukkit.getServer().getOnlinePlayers().stream()
