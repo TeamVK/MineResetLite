@@ -410,21 +410,18 @@ public class Mine implements ConfigurationSerializable {
 				for (int x = minX; x <= maxX; ++x) {
 					for (int y = minY; y <= maxY; ++y) {
 						for (int z = minZ; z <= maxZ; ++z) {
-							if (!fillMode || shoulBeFilled(world.getBlockAt(x, y, z).getType())) {
+							Block block = world.getBlockAt(x, y, z);
+							if (!fillMode || shoulBeFilled(block.getType())) {
 								if (y == maxY && surface != null) {
-									Block b = world.getBlockAt(x, y, z);
-									surface.setBlockTypeFor(b);
+									surface.setBlockTypeFor(block);
 									continue;
 								}
 								double r = RAND.nextDouble();
-								int finalX = x;
-								int finalY = y;
-								int finalZ = z;
 
 								probabilityMap.stream()
 										.filter(ce -> r <= ce.getChance())
 										.findFirst()
-										.ifPresent(ce -> ce.getBlock().setBlockTypeFor(world.getBlockAt(finalX, finalY, finalZ)));
+										.ifPresent(ce -> ce.getBlock().setBlockTypeFor(block));
 							}
 						}
 					}
