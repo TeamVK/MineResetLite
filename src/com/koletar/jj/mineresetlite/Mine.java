@@ -417,14 +417,12 @@ public class Mine implements ConfigurationSerializable {
 									continue;
 								}
 								double r = RAND.nextDouble();
-								int finalX = x;
-								int finalY = y;
-								int finalZ = z;
-
-								probabilityMap.stream()
-										.filter(ce -> r <= ce.getChance())
-										.findFirst()
-										.ifPresent(ce -> ce.getBlock().setBlockTypeFor(world.getBlockAt(finalX, finalY, finalZ)));
+								for (CompositionEntry entry : probabilityMap) {
+									if (r <= entry.getChance()) {
+										entry.getBlock().setBlockTypeFor(world.getBlockAt(x, y, z));
+										break;
+									}
+								}
 							}
 						}
 					}
